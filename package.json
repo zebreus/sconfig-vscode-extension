@@ -1,0 +1,25 @@
+{
+  "name": "sconfig-extension",
+  "displayName": "sconfig-extension",
+  "description": "Experimental sconfig language support",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.84.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "sconfig",
+      "aliases": ["sconfig", "sconfig"],
+      "extensions": [".cb"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "sconfig",
+      "scopeName": "source.sconfig",
+      "path": "./syntaxes/sconfig.tmLanguage.json"
+    }]
+  }
+}
