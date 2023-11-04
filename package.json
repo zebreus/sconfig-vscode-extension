@@ -3,12 +3,17 @@
   "displayName": "sconfig-extension",
   "description": "Experimental sconfig language support",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zebreus/sconfig-vscode-extension.git"
+  },
   "engines": {
     "vscode": "^1.84.0"
   },
   "categories": [
     "Programming Languages"
   ],
+  "license": "GPL-2.0-only",
   "contributes": {
     "languages": [ {
         "id": "sconfig",
