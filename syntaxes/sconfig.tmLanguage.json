@@ -3,27 +3,661 @@
 	"name": "sconfig",
 	"patterns": [
 		{
-			"include": "#keywords"
+			"include": "#comment"
 		},
 		{
-			"include": "#strings"
+			"include": "#chipBlock"
+		},
+		{
+			"include": "#firmwareConfigBlockChildren"
+		},
+		{
+			"include": "#failUntilEnd"
 		}
 	],
 	"repository": {
-		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.sconfig",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+		"ops": {
+			"name": "support.function",
+			"match": "\\b(ops)\\b"
 		},
-		"strings": {
-			"name": "string.quoted.double.sconfig",
+		"subsystemid": {
+			"name": "support.function",
+			"match": "\\b(subsystemid)\\b"
+		},
+		"option": {
+			"name": "support.function",
+			"match": "\\b(option)\\b"
+		},
+		"probe": {
+			"name": "support.function",
+			"match": "\\b(probe)\\b"
+		},
+		"smbios_dev_info": {
+			"name": "support.function",
+			"match": "\\b(smbios_dev_info)\\b"
+		},
+		"smbios_slot_desc": {
+			"name": "support.function",
+			"match": "\\b(smbios_slot_desc)\\b"
+		},
+		"end": {
+			"name": "keyword.control",
+			"match": "\\b(end)\\b"
+
+		},
+		"alias": {
+			"name": "keyword.operator",
+			"match": "\\b(alias)\\b"
+		},
+		"ref": {
+			"name": "keyword.operator",
+			"match": "\\b(ref)\\b"
+		},
+		"chip": {
+			"name": "support.class",
+			"match": "\\b(chip)\\b"
+		},
+		"firmwareConfig": {
+			"name": "support.class",
+			"match": "\\b(fw_config)\\b"
+		},
+		"device": {
+			"name": "support.class",
+			"match": "\\b(device)\\b"
+		},
+		"inherit": {
+			"name": "keyword.other",
+			"match": "\\b(inherit)\\b"
+		},
+		"register": {
+			"name": "support.function",
+			"match": "\\b(register)\\b"
+		},
+		"equal": {
+			"name": "keyword.operator.js",
+			"match": "\\b([=])\\b"
+		},
+		"pipe": {
+			"name": "keyword.operator.js",
+			"match": "\\|"
+		},
+		"field": {
+			"name": "support.class",
+			"match": "\\b(field)\\b"
+		},
+		"comment": {
+			"name": "comment.line.number-sign",
+			"match": "#.*$"
+		},
+		"bus": {
+			"name": "constant.language",
+			"match": "\\b(pci|pnp|i2c|cpu_cluster|cpu|domain|generic|mmio|spi|usb|gpio|mdio)\\b"
+		},
+		"status": {
+			"name": "constant.language.sconfig",
+			"match": "\\b(hidden|mandatory)\\b"
+		},
+		"boolean": {
+			"name": "constant.language.sconfig",
+			"match": "\\b(on|off)\\b"
+		},
+		"number": {
+			"name": "constant.numeric",
+			"match": "\\b((0x[0-9a-fA-F.]+)|([0-9a-fA-F.]+))\\b"
+		},
+		"resource": {
+			"name": "support.function",
+			"match": "\\b(irq|drq|io)\\b"
+		},
+		"string": {
+			"name": "source.c",
 			"begin": "\"",
 			"end": "\"",
+			"patterns": [ {
+					"include": "source.c"
+				} ]
+		},
+		"unquotedString": {
+			"name": "string.unquoted.sconfig",
+			"match": "\\b([^ \t]+)\\b"
+		},
+
+		"failOneToken": {
+			"name": "invalid.illegal.sconfig",
+			"match": "\\b([^ \t]+)\\b"
+		},
+		"failUntilDeviceContinues": {
+			"name": "invalid.illegal.sconfig",
+			"begin": "\\b[^ \\t]+\\b",
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))"
+		},
+		"failUntilEnd": {
+			"end": "(?=\\bend\\b)",
+			"begin": "[^ \\t\\n]",
+			"name": "invalid.illegal.sconfig",
+			"patterns": [ {
+					"include": "#anyBlock"
+				} ]
+		},
+		"anyBlock": {
+			"begin": "\\b(chip|device|fw_config|field)\\b",
+			"end": "\\b(end)\\b",
+			"patterns": [ {
+					"include": "#anyBlock"
+				} ]
+		},
+
+		"chipBlock": {
+			"name": "meta.block.sconfig.chip",
+			"begin": "\\b(chip)\\b",
+			"beginCaptures": { "0": {
+					"patterns": [ {
+							"include": "#chip"
+						} ]
+				} },
+
+			"end": "\\b(end)\\b",
+			"endCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#end"
+						} ]
+				} },
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#chipBlockChildren"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"firmwareConfigBlockChildren": {
+			"begin": "\\b(fw_config)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#firmwareConfig"
+						} ]
+				} },
+			"end": "\\b(end)\\b",
+			"endCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#end"
+						} ]
+				} },
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#fieldBlock"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+
+		"fieldBlock": {
+			"begin": "\\b(field)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#field"
+						} ]
+				} },
+			"end": "\\b(end)\\b",
+			"endCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#end"
+						} ]
+				} },
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#fieldBlockChildren"
+				}, {
+					"include": "#pipe"
+				}, {
+					"include": "#number"
+				}, {
+					"include": "#string"
+				}, {
+					"include": "#unquotedString"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"fieldBlockChildren": {
+			"begin": "(?=\\b(option|end))\\b",
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#optionBlock"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+
+		"chipBlockChildren": {
+			"begin": "\\b([^ \t]+)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#unquotedString"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#chipBlock"
+				}, {
+					"include": "#deviceBlock"
+				}, {
+					"include": "#registerInChipBlock"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+
+		"deviceBlock": {
+			"begin": "\\b(device)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#device"
+						} ]
+				}
+			},
+
+			"end": "\\b(end)\\b",
+			"endCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#end"
+						} ]
+				} }
+			,
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockReferenceA"
+				}, {
+					"include": "#deviceBlockBusA"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockBusA": {
+			"begin": "\\b(pci|pnp|i2c|cpu_cluster|cpu|domain|generic|mmio|spi|usb|gpio|mdio)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#bus"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockBusB"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockBusB": {
+			"begin": "\\b((0x[0-9a-fA-F.]+)|([0-9a-fA-F.]+))\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#number"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockBusC"
+				}, {
+					"include": "#deviceBlockChildren"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockBusC": {
+			"begin": "\\b(alias)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#alias"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockReferenceB"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockReferenceA": {
+			"begin": "\\b(ref)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#ref"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockReferenceB"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockReferenceB": {
+			"begin": "\\b([^ \t]+)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#unquotedString"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlockChildren"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"deviceBlockChildren": {
+			"begin": "\\b(on|off|hidden|mandatory)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#status"
+						}, {
+							"include": "#boolean"
+						} ]
+				} },
+			"end": "(?=\\bend\\b)",
+			"patterns": [ {
+					"include": "#comment"
+				}, {
+					"include": "#deviceBlock"
+				}, {
+					"include": "#registerInDeviceBlock"
+				}, {
+					"include": "#subSystemIdBlock"
+				}, {
+					"include": "#resourceBlock"
+				}, {
+					"include": "#smBiosSlotDescBlock"
+				}, {
+					"include": "#smBiosDevInfoBlock"
+				}, {
+					"include": "#probeBlock"
+				}, {
+					"include": "#opsBlock"
+				}, {
+					"include": "#failUntilEnd"
+				} ]
+		},
+
+		"resourceBlock": {
+			"begin": "\\b(irq|drq|io)\\b",
+			"beginCaptures": {
+				"1": {
+					"patterns": [ {
+							"include": "#resource"
+						} ]
+				} },
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
 			"patterns": [
 				{
-					"name": "constant.character.escape.sconfig",
-					"match": "\\\\."
+					"include": "#comment"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#equal"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"registerInDeviceBlock": {
+			"begin": "\\b(register)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#register"
+						} ]
+				}
+			},
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#equal"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"registerInChipBlock": {
+			"begin": "\\b(register)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#register"
+						} ]
+				}
+			},
+			"end": "(?=(device|chip|register|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#equal"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"optionBlock": {
+			"begin": "\\b(option)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#option"
+						} ]
+				} },
+			"end": "(?=(option|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"smBiosSlotDescBlock": {
+			"begin": "\\b(smbios_slot_desc)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#smbios_slot_desc"
+						} ]
+				} },
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"smBiosDevInfoBlock": {
+			"begin": "\\b(smbios_dev_info)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#smbios_dev_info"
+						} ]
+				} },
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"probeBlock": {
+			"begin": "\\b(probe)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#probe"
+						} ]
+				}
+			},
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"opsBlock": {
+			"begin": "\\b(ops)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#ops"
+						} ]
+				}
+			},
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#string"
+				},
+				{
+					"include": "#unquotedString"
+				},
+				{
+					"include": "#failOneToken"
+				}
+			]
+		},
+
+		"subSystemIdBlock": {
+			"begin": "\\b(subsystemid)\\b",
+			"beginCaptures": {
+				"0": {
+					"patterns": [ {
+							"include": "#subsystemid"
+						} ]
+				}
+			},
+			"end": "(?=(device|chip|subsystemid|smbios_slot_desc|irq|drq|io|smbios_dev_info|register|probe|ops|end))",
+			"patterns": [
+				{
+					"include": "#comment"
+				},
+				{
+					"include": "#number"
+				},
+				{
+					"include": "#inherit"
+				},
+				{
+					"include": "#failUntilDeviceContinues"
 				}
 			]
 		}

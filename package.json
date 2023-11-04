@@ -10,16 +10,19 @@
     "Programming Languages"
   ],
   "contributes": {
-    "languages": [{
-      "id": "sconfig",
-      "aliases": ["sconfig", "sconfig"],
-      "extensions": [".cb"],
-      "configuration": "./language-configuration.json"
-    }],
-    "grammars": [{
-      "language": "sconfig",
-      "scopeName": "source.sconfig",
-      "path": "./syntaxes/sconfig.tmLanguage.json"
-    }]
+    "languages": [ {
+        "id": "sconfig",
+        "aliases": [ "sconfig", "sconfig" ],
+        "extensions": [ ".cb" ],
+        "configuration": "./language-configuration.json"
+      } ],
+    "grammars": [ {
+        "language": "sconfig",
+        "scopeName": "source.sconfig",
+        "path": "./syntaxes/sconfig.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.c": "c"
+        }
+      } ]
   }
 }
